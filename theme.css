@@ -111,6 +111,26 @@ img {
   }
 }
 
+.logo {
+  display: flex; /* Make the logo container a flex container */
+  flex-direction: column; /* Stack the image and h1 vertically */
+  align-items: center; /* Center items horizontally within the logo container */
+  /* If you want the logo div itself to be centered within the header,
+     and other items to move around it, you might need to adjust
+     .header's justify-content and use margin-right: auto and margin-left: auto
+     on the logo, or wrap logo and h1 in another div and center that.
+     For now, we'll assume centering within its own space. */
+}
+
+.logo img {
+  /* Style for your bee logo image */
+  width: 140px; /* Adjust this value to make it a tiny bit bigger.
+                 Start with a value like 50px or 60px and adjust as needed.
+                 Original might be smaller. */
+  height: auto; /* Maintain aspect ratio */
+  margin-bottom: 5px; /* Add a small gap between the logo and the text */
+}
+
 .logo h1 {
   font-family: var(--font-high-galactic);
   font-size: clamp(1.2rem, 3vw, 1.5rem);
@@ -195,6 +215,57 @@ img {
 .social-links a:hover {
   color: var(--secondary);
   text-shadow: 0 0 10px rgba(255, 215, 0, 0.8); /* Neon gold glow on hover */
+}
+
+/* --- Desktop Styles (Ensure these override mobile as needed) --- */
+@media (min-width: 769px) {
+  /* Adjust breakpoint if needed */
+  .header {
+    /* Reset any mobile-specific flex-wrap if needed, or keep for larger screens */
+    flex-wrap: nowrap;
+    justify-content: space-between; /* Default desktop justification */
+  }
+
+  .logo {
+    flex-grow: 0; /* Don't let it grow on desktop */
+    text-align: left; /* Revert to left align for desktop */
+    padding-left: 0; /* Remove mobile padding */
+  }
+
+  .nav-links {
+    position: static; /* Revert to static for normal flow */
+    transform: translateY(0); /* Remove any transform */
+    flex-direction: row; /* Horizontal links */
+    background-color: transparent; /* No background */
+    padding: 0; /* No padding */
+    box-shadow: none; /* No shadow */
+    width: auto; /* Auto width */
+    gap: var(--spacing-md); /* Original desktop gap */
+    display: flex; /* Ensure it's flex on desktop */
+    order: initial; /* Reset order */
+  }
+
+  .nav-links a {
+    font-size: 1.1rem; /* Revert to desktop font size */
+    padding: 0; /* Remove mobile padding */
+    display: inline-block; /* Revert to inline-block */
+    /* Ensure ::after and hover styles are active on desktop */
+    &::after {
+      display: block; /* Show underline effect on desktop */
+    }
+    &:hover {
+      text-shadow: 0 0 10px rgba(255, 215, 0, 0.8); /* Re-enable hover glow */
+    }
+  }
+
+  .mobile-menu-btn {
+    display: none; /* Hide hamburger on desktop */
+  }
+
+  .social-links {
+    display: flex; /* Show social links on desktop */
+    order: initial; /* Reset order */
+  }
 }
 
 /* Neon Purple Glow Effect */
@@ -302,20 +373,49 @@ img {
 /* Portfolio Section */
 .portfolio {
   padding: var(--spacing-xl) var(--spacing-md);
-  background-color: var(--background); /* Optional: Add background color */
+  background-color: var(--background);
+  max-width: 1400px; /* Set a max width for the entire portfolio section */
+  margin: 0 auto; /* Center the portfolio section */
+}
+
+/* Headings and Intros - Ensure they are centered and readable */
+.portfolio h1,
+.portfolio h2 {
+  font-family: var(--font-high-galactic);
+  color: var(--primary);
+  margin-bottom: var(--spacing-sm);
+  text-align: center; /* Center these titles */
+  font-size: clamp(2rem, 5vw, 3rem); /* Make main title responsive */
+}
+
+.portfolio-category h2 {
+  font-size: clamp(1.8rem, 4vw, 2.5rem); /* Make category titles responsive */
+  margin-top: var(--spacing-lg); /* Space above category title */
+}
+
+.section-intro,
+.category-intro {
+  text-align: center;
+  margin-bottom: var(--spacing-lg);
+  max-width: 900px; /* Max width for intro text readability */
+  margin-left: auto;
+  margin-right: auto;
+  color: var(--text);
+  line-height: var(--line-height-base);
 }
 
 .masonry-grid {
-  display: flex;
-  gap: var(--spacing-md); /* Use gap for consistent spacing */
+  display: flex; /* Keeps the columns side-by-side */
+  gap: var(--spacing-md);
   width: 100%;
+  align-items: flex-start; /* Align columns to the top if they have different heights */
 }
 
 .masonry-column {
-  flex: 1;
+  flex: 1; /* Each column takes equal available space */
   display: flex;
-  flex-direction: column;
-  gap: var(--spacing-md); /* Consistent spacing between items */
+  flex-direction: column; /* Stacks items vertically within each column */
+  gap: var(--spacing-md);
 }
 
 .portfolio-item {
@@ -323,33 +423,41 @@ img {
   overflow: hidden;
   border-radius: var(--border-radius);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+  background-color: var(--light); /* Ensure items have a background */
+  box-shadow: var(--shadow-sm); /* Add default shadow */
 }
 
 .portfolio-item:hover {
-  transform: translateY(-5px); /* Lift effect on hover */
-  box-shadow: var(--shadow-lg); /* Add shadow on hover */
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-lg);
 }
 
 .portfolio-item img {
   width: 100%;
-  height: auto;
-  display: block;
+  /* Crucial: Define a minimum height for all images
+     and use object-fit: cover to fill that height without distortion.
+     Adjust this value to your desired minimum uniform height. */
+  min-height: 250px; /* Start with a consistent minimum height for images */
+  height: auto; /* Allow natural height, but min-height will enforce minimum */
+  object-fit: cover; /* Crops image to fit the min-height without distortion */
+  display: block; /* Remove extra space below images */
   border-radius: var(--border-radius);
   transition: transform 0.3s ease, filter 0.3s ease;
 }
 
 .portfolio-item:hover img {
-  transform: scale(1.05); /* Slight zoom effect on hover */
-  filter: brightness(0.8); /* Darken image on hover */
+  transform: scale(1.05);
+  filter: brightness(0.8);
 }
 
+/* Overlay (no changes, your current styles are good for this) */
 .overlay {
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.6); /* Semi-transparent overlay */
+  background: rgba(0, 0, 0, 0.6);
   color: var(--light);
   display: flex;
   flex-direction: column;
@@ -361,20 +469,85 @@ img {
 }
 
 .portfolio-item:hover .overlay {
-  opacity: 1; /* Show overlay on hover */
+  opacity: 1;
 }
 
 .overlay h3 {
   font-size: 1.5rem;
   margin-bottom: var(--spacing-xs);
   text-align: center;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* Add text shadow for better readability */
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 .overlay p {
+  /* You have a <p> tag in your overlay in HTML, so target it here */
   font-size: 1rem;
   text-align: center;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* Add text shadow for better readability */
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  padding: 0 var(--spacing-xs); /* Add some horizontal padding for text */
+}
+
+/* --- Responsive Adjustments --- */
+
+/* Tablet view (2 columns or 1 larger column) */
+@media (max-width: 1024px) {
+  .masonry-grid {
+    flex-direction: column; /* Stack columns on smaller screens */
+    /* If you still want multiple columns, you'd switch to CSS Grid here
+           or try a different flex approach for columns.
+           For now, stacking columns means each item will be full width. */
+  }
+
+  .masonry-column {
+    flex-direction: row; /* Make items within the column flow horizontally on smaller screens */
+    flex-wrap: wrap; /* Allow items to wrap into rows */
+    justify-content: center; /* Center items if they don't fill a row */
+    gap: var(--spacing-md);
+  }
+
+  .portfolio-item {
+    flex: 1 1 calc(50% - var(--spacing-md) / 2); /* Two items per row, with gap */
+    max-width: calc(50% - var(--spacing-md) / 2);
+  }
+
+  .portfolio-item img {
+    min-height: 200px; /* Slightly smaller min-height for tablets */
+  }
+}
+
+/* Mobile view (single column) */
+@media (max-width: 768px) {
+  .portfolio {
+    padding: var(--spacing-lg) var(--spacing-sm); /* Adjust padding for smaller screens */
+  }
+
+  .masonry-grid {
+    flex-direction: column; /* Ensure main grid is a single column */
+    gap: var(--spacing-md);
+  }
+
+  .masonry-column {
+    flex-direction: column; /* Stack items vertically within each column */
+    flex-wrap: nowrap; /* Prevent wrapping */
+    gap: var(--spacing-md);
+  }
+
+  .portfolio-item {
+    flex: 1 1 100%; /* Each item takes full width */
+    max-width: 100%;
+  }
+
+  .portfolio-item img {
+    min-height: 180px; /* Smaller min-height for phones */
+  }
+
+  .overlay h3 {
+    font-size: 1.2rem; /* Smaller font on mobile */
+  }
+
+  .overlay p {
+    font-size: 0.9rem; /* Smaller font on mobile */
+  }
 }
 
 /* About Section */
