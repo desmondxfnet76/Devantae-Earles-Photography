@@ -1,7 +1,6 @@
 /* Import High Galactic Font */
 @font-face {
   font-family: "High Galactic";
-  /* Removed "fonts/" because files are now in the same directory as theme.css */
   src: url("HighGalactic.woff2") format("woff2"),
     url("HighGalactic.woff") format("woff");
   font-weight: normal;
@@ -62,6 +61,19 @@ body {
   line-height: var(--line-height-base);
   color: var(--text);
   background-color: var(--background);
+  /* This is CRITICAL for preventing background scroll */
+  transition: overflow 0.3s ease; /* Smooth transition if overflow changes */
+}
+
+/* Ensure the body scroll is prevented when menu is open */
+body.menu-open {
+  overflow: hidden;
+  /* Add fixed positioning and height to prevent scroll issue on iOS/some Android browsers */
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
 }
 
 a {
@@ -90,7 +102,7 @@ img {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  z-index: 1000;
+  z-index: 1000; /* Ensure header is on top */
   box-shadow: var(--shadow-lg);
   backdrop-filter: blur(10px); /* Frosted glass effect */
   animation: neon-glow 3s infinite alternate; /* Apply neon glow animation */
@@ -113,34 +125,26 @@ img {
 }
 
 .logo {
-  display: flex; /* Make the logo container a flex container */
-  flex-direction: column; /* Stack the image and h1 vertically */
-  align-items: center; /* Center items horizontally within the logo container */
-  /* If you want the logo div itself to be centered within the header,
-     and other items to move around it, you might need to adjust
-     .header's justify-content and use margin-right: auto and margin-left: auto
-     on the logo, or wrap logo and h1 in another div and center that.
-     For now, we'll assume centering within its own space. */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .logo img {
-  /* Style for your bee logo image */
-  width: 140px; /* Adjust this value to make it a tiny bit bigger.
-                 Start with a value like 50px or 60px and adjust as needed.
-                 Original might be smaller. */
-  height: auto; /* Maintain aspect ratio */
-  margin-bottom: 5px; /* Add a small gap between the logo and the text */
+  width: 140px;
+  height: auto;
+  margin-bottom: 5px;
 }
 
 .logo h1 {
   font-family: var(--font-high-galactic);
   font-size: clamp(1.2rem, 3vw, 1.5rem);
-  color: #ffc107; /* darker gold for text body */
+  color: #ffc107;
   text-shadow: 1px 1px 0 #ffb7c5, 2px 2px 0 #ffb7c5,
     0 0 4px rgba(255, 215, 0, 0.6);
   letter-spacing: 1px;
   text-transform: uppercase;
-  animation: pulsate 2s infinite; /* slightly slower */
+  animation: pulsate 2s infinite;
   transition: text-shadow 0.3s ease;
 }
 
@@ -151,21 +155,23 @@ img {
 
 /* Optional: Neon Glow Animation */
 @keyframes neon-glow {
-  0% {
-    text-shadow: 0 0 5px #9370db, 0 0 10px #9370db, 0 0 20px #9370db,
-      0 0 40px #4b0082;
-  }
+  0%,
   100% {
-    text-shadow: 0 0 10px #9370db, 0 0 20px #9370db, 0 0 40px #9370db,
-      0 0 80px #4b0082;
+    box-shadow: 0 0 10px rgba(75, 0, 130, 0.8), 0 0 20px rgba(75, 0, 130, 0.8),
+      0 0 30px rgba(75, 0, 130, 0.8);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(75, 0, 130, 0.8), 0 0 40px rgba(75, 0, 130, 0.8),
+      0 0 60px rgba(75, 0, 130, 0.8);
   }
 }
-/* Navigation Links */
+
+/* Navigation Links (Desktop Default) */
 .nav-links {
   list-style: none;
   display: flex;
   gap: var(--spacing-md);
-  align-items: center; /* Align items vertically */
+  align-items: center;
 }
 
 .nav-links a {
@@ -218,67 +224,169 @@ img {
   text-shadow: 0 0 10px rgba(255, 215, 0, 0.8); /* Neon gold glow on hover */
 }
 
-/* --- Desktop Styles (Ensure these override mobile as needed) --- */
-@media (min-width: 769px) {
-  /* Adjust breakpoint if needed */
+/* Mobile Menu Button (hidden by default on desktop) */
+.mobile-menu-btn {
+  display: none; /* Hidden on desktop by default */
+  background: none;
+  border: none;
+  color: var(--light);
+  font-size: 2rem;
+  cursor: pointer;
+  z-index: 1001; /* Ensure button is above header content if needed */
+}
+
+/* --- Mobile Styles (max-width: 768px) --- */
+@media (max-width: 768px) {
   .header {
-    /* Reset any mobile-specific flex-wrap if needed, or keep for larger screens */
-    flex-wrap: nowrap;
-    justify-content: space-between; /* Default desktop justification */
+    flex-direction: row; /* Keep header items in a row on mobile for better layout control */
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-sm) var(--spacing-md); /* Adjust padding */
+    flex-wrap: nowrap; /* Prevent wrapping on smaller screens for header elements */
   }
 
   .logo {
-    flex-grow: 0; /* Don't let it grow on desktop */
-    text-align: left; /* Revert to left align for desktop */
-    padding-left: 0; /* Remove mobile padding */
+    flex-direction: row; /* Keep logo and text inline on mobile header */
+    gap: 10px; /* Space between logo and text */
+  }
+
+  .logo img {
+    width: 60px; /* Adjust logo size for mobile */
+    height: 60px;
+    margin-bottom: 0;
+  }
+
+  .logo h1 {
+    font-size: clamp(
+      1rem,
+      4vw,
+      1.2rem
+    ); /* Smaller font size for mobile header */
   }
 
   .nav-links {
-    position: static; /* Revert to static for normal flow */
-    transform: translateY(0); /* Remove any transform */
-    flex-direction: row; /* Horizontal links */
-    background-color: transparent; /* No background */
-    padding: 0; /* No padding */
-    box-shadow: none; /* No shadow */
-    width: auto; /* Auto width */
-    gap: var(--spacing-md); /* Original desktop gap */
-    display: flex; /* Ensure it's flex on desktop */
-    order: initial; /* Reset order */
+    position: fixed;
+    top: 0;
+    left: -100%; /* Start off-screen */
+    width: 75%; /* Width of the mobile menu */
+    max-width: 300px; /* Max width for larger tablets in portrait */
+    height: 100vh; /* Full viewport height */
+    background-color: var(--dark); /* Dark background for the menu */
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: var(--spacing-lg); /* Larger gap for mobile links */
+    box-shadow: var(--shadow-lg);
+    transition: left 0.4s ease-in-out; /* Smooth slide in/out */
+    z-index: 999; /* Below header, above main content */
+    padding-top: var(--spacing-xl); /* Push content down from top */
+    padding-bottom: var(--spacing-xl);
+  }
+
+  .nav-links.active {
+    left: 0; /* Slide in */
   }
 
   .nav-links a {
-    font-size: 1.1rem; /* Revert to desktop font size */
-    padding: 0; /* Remove mobile padding */
-    display: inline-block; /* Revert to inline-block */
-    /* Ensure ::after and hover styles are active on desktop */
-    &::after {
-      display: block; /* Show underline effect on desktop */
-    }
-    &:hover {
-      text-shadow: 0 0 10px rgba(255, 215, 0, 0.8); /* Re-enable hover glow */
-    }
+    font-size: 1.4rem; /* Larger font for mobile menu links */
+    padding: var(--spacing-sm); /* Add padding for touch targets */
+    display: block; /* Make links block level */
+    width: 100%; /* Full width for links */
+    text-align: center;
+  }
+
+  .nav-links a::after {
+    /* Hide underline on mobile menu for cleaner look if desired */
+    display: none;
+  }
+
+  .nav-links a:hover {
+    color: var(--secondary);
+    background-color: rgba(255, 255, 255, 0.1);
   }
 
   .mobile-menu-btn {
-    display: none; /* Hide hamburger on desktop */
+    display: block; /* Show hamburger on mobile */
   }
 
   .social-links {
-    display: flex; /* Show social links on desktop */
-    order: initial; /* Reset order */
+    display: none; /* Hide social links on mobile header, can be moved inside nav-links if desired */
+  }
+
+  /* CRITICAL: Hide hero content when mobile menu is open */
+  body.menu-open .home .hero-slider {
+    /* Set opacity to 0 and pointer-events to none for the hero slider */
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s ease-in-out; /* Smooth fade out */
+  }
+
+  body.menu-open .home .cta-buttons {
+    /* Hide CTA buttons explicitly */
+    display: none;
   }
 }
 
-/* Neon Purple Glow Effect */
-@keyframes neon-glow {
-  0%,
-  100% {
-    box-shadow: 0 0 10px rgba(75, 0, 130, 0.8), 0 0 20px rgba(75, 0, 130, 0.8),
-      0 0 30px rgba(75, 0, 130, 0.8);
+/* --- Desktop Styles (min-width: 769px) --- */
+@media (min-width: 769px) {
+  .header {
+    flex-wrap: nowrap;
+    justify-content: space-between;
   }
-  50% {
-    box-shadow: 0 0 20px rgba(75, 0, 130, 0.8), 0 0 40px rgba(75, 0, 130, 0.8),
-      0 0 60px rgba(75, 0, 130, 0.8);
+
+  .logo {
+    flex-grow: 0;
+    text-align: left;
+    padding-left: 0;
+    flex-direction: column; /* Revert to column for desktop */
+    gap: 0;
+  }
+
+  .logo img {
+    width: 140px; /* Revert to desktop size */
+    height: auto;
+    margin-bottom: 5px;
+  }
+
+  .logo h1 {
+    font-size: clamp(1.2rem, 3vw, 1.5rem); /* Revert to desktop size */
+  }
+
+  .nav-links {
+    position: static;
+    transform: translateY(0);
+    flex-direction: row;
+    background-color: transparent;
+    padding: 0;
+    box-shadow: none;
+    width: auto;
+    gap: var(--spacing-md);
+    display: flex;
+    order: initial;
+    height: auto; /* Revert height for desktop */
+  }
+
+  .nav-links a {
+    font-size: 1.1rem;
+    padding: 0;
+    display: inline-block;
+  }
+
+  .nav-links a::after {
+    display: block;
+  }
+
+  .nav-links a:hover {
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
+  }
+
+  .mobile-menu-btn {
+    display: none;
+  }
+
+  .social-links {
+    display: flex;
+    order: initial;
   }
 }
 
@@ -301,12 +409,12 @@ img {
   left: 0;
   width: 100%;
   height: 100%;
-  opacity: 0; /* Hide all slides by default */
-  transition: opacity 2s ease-in-out; /* Smooth fade transition */
+  opacity: 0;
+  transition: opacity 2s ease-in-out;
 }
 
 .hero-slide.active {
-  opacity: 1; /* Show the active slide */
+  opacity: 1;
 }
 
 .hero-slide img {
@@ -315,32 +423,33 @@ img {
   object-fit: cover;
 }
 
-/* Slideshow Animation */
+/* Slideshow Animation (Your existing animation is good) */
 @keyframes slideshow {
   0% {
-    opacity: 0; /* Start hidden */
+    opacity: 0;
   }
   10% {
-    opacity: 1; /* Fade in */
+    opacity: 1;
   }
   50% {
-    opacity: 1; /* Stay visible */
+    opacity: 1;
   }
   60% {
-    opacity: 0; /* Fade out */
+    opacity: 0;
   }
   100% {
-    opacity: 0; /* Stay hidden */
+    opacity: 0;
   }
 }
 
 .hero-slide:nth-child(1) {
-  animation: slideshow 20s infinite; /* First image animation */
+  animation: slideshow 20s infinite;
 }
 
 .hero-slide:nth-child(2) {
-  animation: slideshow 20s infinite 10s; /* Second image animation with 10s delay */
+  animation: slideshow 20s infinite 10s;
 }
+
 .slide-caption {
   position: absolute;
   top: 50%;
@@ -348,18 +457,18 @@ img {
   transform: translate(-50%, -50%);
   text-align: center;
   color: var(--light);
-  background: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+  background: rgba(0, 0, 0, 0.5);
   padding: var(--spacing-md);
   border-radius: var(--border-radius);
 }
 
 .slide-caption h2 {
-  font-size: clamp(2rem, 5vw, 3rem); /* Fluid font size */
+  font-size: clamp(2rem, 5vw, 3rem);
   margin-bottom: var(--spacing-sm);
 }
 
 .slide-caption p {
-  font-size: clamp(1rem, 3vw, 1.5rem); /* Fluid font size */
+  font-size: clamp(1rem, 3vw, 1.5rem);
 }
 
 .cta-buttons {
@@ -369,36 +478,37 @@ img {
   transform: translateX(-50%);
   display: flex;
   gap: var(--spacing-md);
+  z-index: 10; /* Ensure buttons are above slides but below menu */
 }
 
 /* Portfolio Section */
 .portfolio {
   padding: var(--spacing-xl) var(--spacing-md);
   background-color: var(--background);
-  max-width: 1400px; /* Set a max width for the entire portfolio section */
-  margin: 0 auto; /* Center the portfolio section */
+  max-width: 1400px;
+  margin: 0 auto;
 }
 
-/* Headings and Intros - Ensure they are centered and readable */
+/* Headings and Intros */
 .portfolio h1,
 .portfolio h2 {
   font-family: var(--font-high-galactic);
   color: var(--primary);
   margin-bottom: var(--spacing-sm);
-  text-align: center; /* Center these titles */
-  font-size: clamp(2rem, 5vw, 3rem); /* Make main title responsive */
+  text-align: center;
+  font-size: clamp(2rem, 5vw, 3rem);
 }
 
 .portfolio-category h2 {
-  font-size: clamp(1.8rem, 4vw, 2.5rem); /* Make category titles responsive */
-  margin-top: var(--spacing-lg); /* Space above category title */
+  font-size: clamp(1.8rem, 4vw, 2.5rem);
+  margin-top: var(--spacing-lg);
 }
 
 .section-intro,
 .category-intro {
   text-align: center;
   margin-bottom: var(--spacing-lg);
-  max-width: 900px; /* Max width for intro text readability */
+  max-width: 900px;
   margin-left: auto;
   margin-right: auto;
   color: var(--text);
@@ -406,16 +516,16 @@ img {
 }
 
 .masonry-grid {
-  display: flex; /* Keeps the columns side-by-side */
+  display: flex;
   gap: var(--spacing-md);
   width: 100%;
-  align-items: flex-start; /* Align columns to the top if they have different heights */
+  align-items: flex-start;
 }
 
 .masonry-column {
-  flex: 1; /* Each column takes equal available space */
+  flex: 1;
   display: flex;
-  flex-direction: column; /* Stacks items vertically within each column */
+  flex-direction: column;
   gap: var(--spacing-md);
 }
 
@@ -424,8 +534,8 @@ img {
   overflow: hidden;
   border-radius: var(--border-radius);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
-  background-color: var(--light); /* Ensure items have a background */
-  box-shadow: var(--shadow-sm); /* Add default shadow */
+  background-color: var(--light);
+  box-shadow: var(--shadow-sm);
 }
 
 .portfolio-item:hover {
@@ -435,13 +545,10 @@ img {
 
 .portfolio-item img {
   width: 100%;
-  /* Crucial: Define a minimum height for all images
-     and use object-fit: cover to fill that height without distortion.
-     Adjust this value to your desired minimum uniform height. */
-  min-height: 250px; /* Start with a consistent minimum height for images */
-  height: auto; /* Allow natural height, but min-height will enforce minimum */
-  object-fit: cover; /* Crops image to fit the min-height without distortion */
-  display: block; /* Remove extra space below images */
+  min-height: 250px;
+  height: auto;
+  object-fit: cover;
+  display: block;
   border-radius: var(--border-radius);
   transition: transform 0.3s ease, filter 0.3s ease;
 }
@@ -451,7 +558,7 @@ img {
   filter: brightness(0.8);
 }
 
-/* Overlay (no changes, your current styles are good for this) */
+/* Overlay */
 .overlay {
   position: absolute;
   top: 0;
@@ -481,73 +588,67 @@ img {
 }
 
 .overlay p {
-  /* You have a <p> tag in your overlay in HTML, so target it here */
   font-size: 1rem;
   text-align: center;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-  padding: 0 var(--spacing-xs); /* Add some horizontal padding for text */
+  padding: 0 var(--spacing-xs);
 }
 
-/* --- Responsive Adjustments --- */
-
-/* Tablet view (2 columns or 1 larger column) */
+/* Responsive Adjustments (Portfolio Section) */
 @media (max-width: 1024px) {
   .masonry-grid {
-    flex-direction: column; /* Stack columns on smaller screens */
-    /* If you still want multiple columns, you'd switch to CSS Grid here
-           or try a different flex approach for columns.
-           For now, stacking columns means each item will be full width. */
+    flex-direction: column;
   }
 
   .masonry-column {
-    flex-direction: row; /* Make items within the column flow horizontally on smaller screens */
-    flex-wrap: wrap; /* Allow items to wrap into rows */
-    justify-content: center; /* Center items if they don't fill a row */
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
     gap: var(--spacing-md);
   }
 
   .portfolio-item {
-    flex: 1 1 calc(50% - var(--spacing-md) / 2); /* Two items per row, with gap */
+    flex: 1 1 calc(50% - var(--spacing-md) / 2);
     max-width: calc(50% - var(--spacing-md) / 2);
   }
 
   .portfolio-item img {
-    min-height: 200px; /* Slightly smaller min-height for tablets */
+    min-height: 200px;
   }
 }
 
-/* Mobile view (single column) */
 @media (max-width: 768px) {
+  /* This media query is duplicated, let's consolidate */
   .portfolio {
-    padding: var(--spacing-lg) var(--spacing-sm); /* Adjust padding for smaller screens */
+    padding: var(--spacing-lg) var(--spacing-sm);
   }
 
   .masonry-grid {
-    flex-direction: column; /* Ensure main grid is a single column */
+    flex-direction: column;
     gap: var(--spacing-md);
   }
 
   .masonry-column {
-    flex-direction: column; /* Stack items vertically within each column */
-    flex-wrap: nowrap; /* Prevent wrapping */
+    flex-direction: column;
+    flex-wrap: nowrap;
     gap: var(--spacing-md);
   }
 
   .portfolio-item {
-    flex: 1 1 100%; /* Each item takes full width */
+    flex: 1 1 100%;
     max-width: 100%;
   }
 
   .portfolio-item img {
-    min-height: 180px; /* Smaller min-height for phones */
+    min-height: 180px;
   }
 
   .overlay h3 {
-    font-size: 1.2rem; /* Smaller font on mobile */
+    font-size: 1.2rem;
   }
 
   .overlay p {
-    font-size: 0.9rem; /* Smaller font on mobile */
+    font-size: 0.9rem;
   }
 }
 
@@ -555,7 +656,7 @@ img {
 .about {
   padding: var(--spacing-xl) var(--spacing-md);
   text-align: center;
-  background-color: var(--background); /* Optional: Add background color */
+  background-color: var(--background);
 }
 
 .about-content {
@@ -564,29 +665,28 @@ img {
 }
 
 .contact-cta {
-  text-align: center; /* centers text & inline elements */
-  margin: 3rem auto; /* adds space and centers the block horizontally */
-  max-width: 600px; /* optional: limits width for better readability */
+  text-align: center;
+  margin: 3rem auto;
+  max-width: 600px;
 }
 
 .contact-cta .btn {
-  display: inline-block; /* makes button respect padding & margin */
+  display: inline-block;
   padding: 0.75rem 1.5rem;
-  background-color: #4b0082; /* adjust to match your style */
-  color: #fff; /* text color */
-  text-decoration: none; /* removes underline */
-  border-radius: 4px; /* rounded corners */
+  background-color: #4b0082;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 4px;
   transition: background 0.3s ease;
-  margin-top: 1rem; /* adds space above the button */
-  font-weight: 600; /* bold text */
+  margin-top: 1rem;
+  font-weight: 600;
 }
 
 .contact-cta .btn:hover {
-  background-color: #ffd700; /* darker on hover */
+  background-color: #ffd700;
 }
 
 /* About Section Headshot */
-
 .headshot {
   width: 200px;
   height: 200px;
@@ -714,38 +814,26 @@ img {
   transform: translateY(-2px);
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
-  .header {
-    flex-direction: column;
-    padding: var(--spacing-sm);
-  }
-
-  .nav-links {
-    flex-direction: column;
-    gap: var(--spacing-sm);
-    margin-top: var(--spacing-sm);
-  }
-
-  .hero-slide h2 {
-    font-size: 2rem;
-  }
-
-  .hero-slide p {
-    font-size: 1.2rem;
-  }
-}
-
+/* General responsive font size adjustments (if needed) */
 @media (max-width: 480px) {
   .masonry-grid {
-    margin-left: -var(--spacing-xs);
+    margin-left: 0; /* No negative margin */
   }
 
   .masonry-column {
-    padding-left: var(--spacing-xs);
+    padding-left: 0; /* No padding */
   }
 
   .portfolio-item {
     margin-bottom: var(--spacing-xs);
+  }
+
+  /* Adjust font sizes for smaller screens if clamp isn't enough */
+  .slide-caption h2 {
+    font-size: 1.8rem;
+  }
+
+  .slide-caption p {
+    font-size: 1rem;
   }
 }
