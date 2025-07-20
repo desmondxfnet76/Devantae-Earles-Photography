@@ -1,8 +1,9 @@
 /* Import High Galactic Font */
 @font-face {
   font-family: "High Galactic";
-  src: url("fonts/HighGalactic.woff2") format("woff2"),
-    url("fonts/HighGalactic.woff") format("woff");
+  /* Removed "fonts/" because files are now in the same directory as theme.css */
+  src: url("HighGalactic.woff2") format("woff2"),
+    url("HighGalactic.woff") format("woff");
   font-weight: normal;
   font-style: normal;
   font-display: swap; /* Ensures text is visible while the font loads */
